@@ -7,20 +7,17 @@ import { Link } from "react-router-dom";
 
 const MyTutorials = () => {
   const [tutors, setTutors] = useState([]);
-  const [email, setEmail] = useState("");
 
   useEffect(() => {
-    if (email) {
-      fetchTutorsByEmail();
-    }
-  }, [email]);
+    fetchAllTutors();
+  }, []);
 
-  const fetchTutorsByEmail = async () => {
+  const fetchAllTutors = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/tutors/${email}`);
+      const { data } = await axios.get("http://localhost:5000/tutors");
       setTutors(data);
     } catch (err) {
-      console.log(err);
+      console.error("Error fetching tutors:", err);
     }
   };
 
@@ -38,9 +35,9 @@ const MyTutorials = () => {
         try {
           await axios.delete(`http://localhost:5000/tutors/${id}`);
           Swal.fire("Deleted!", "Tutorial has been deleted.", "success");
-          fetchTutorsByEmail();
+          fetchAllTutors(); // Refresh the list
         } catch (err) {
-          console.log(err);
+          console.error("Delete failed:", err);
         }
       }
     });
@@ -48,21 +45,13 @@ const MyTutorials = () => {
 
   return (
     <div className="pt-12 md:pt-16 lg:pt-20">
-      <div className="container mx-auto">
-        <h2 className="font-bold text-xl lg:text-2xl mb-4">My Tutorials</h2>
-
-        <input
-          type="email"
-          placeholder="Enter your email to view tutorials"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="input input-bordered w-full max-w-md mb-6"
-        />
+      <div className="container mx-auto px-4">
+        <h2 className="font-bold text-xl lg:text-2xl mb-6 text-center">All Tutorials</h2>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full text-xs lg:text-sm">
+          <table className="min-w-full text-sm text-center border border-gray-300 rounded">
             <thead className="bg-gray-200">
-              <tr className="text-center">
+              <tr>
                 <th className="p-3">Image</th>
                 <th className="p-3">Tutor</th>
                 <th className="p-3">Language</th>
@@ -73,34 +62,46 @@ const MyTutorials = () => {
               </tr>
             </thead>
             <tbody>
-              {tutors.map((tutor) => (
-                <tr key={tutor.id} className="border-b text-center">
-                  <td className="p-2 w-24 h-24">
-                    <img
-                      src={tutor.photo}
-                      alt="Tutor"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  </td>
-                  <td className="p-3">{tutor.name}</td>
-                  <td className="p-3">{tutor.language}</td>
-                  <td className="p-3">BDT {tutor.price}</td>
-                  <td className="p-3">
-                    {tutor.description?.substring(0, 30)}...
-                  </td>
-                  <td className="p-3">{tutor.review}</td>
-                  <td className="p-3">
-                    <div className="flex gap-3 justify-center">
-                      <button onClick={() => handleDelete(tutor.id)}>
-                        <MdDeleteForever size={20} />
-                      </button>
-                      <Link to={`/update/${tutor.id}`}>
-                        <FaRegPenToSquare size={18} />
-                      </Link>
-                    </div>
+              {tutors.length > 0 ? (
+                tutors.map((tutor) => (
+                  <tr key={tutor.id} className="border-b">
+                    <td className="p-3 w-24 h-24">
+                      <img
+                        src={tutor.photo}
+                        alt="Tutor"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    </td>
+                    <td className="p-3">{tutor.name}</td>
+                    <td className="p-3">{tutor.language}</td>
+                    <td className="p-3">BDT {tutor.price}</td>
+                    <td className="p-3">
+                      {tutor.description?.substring(0, 30)}...
+                    </td>
+                    <td className="p-3">{tutor.review}</td>
+                    <td className="p-3">
+                      <div className="flex justify-center gap-3">
+                        <button
+                          onClick={() => handleDelete(tutor.id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Delete"
+                        >
+                          <MdDeleteForever size={20} />
+                        </button>
+                        <Link to={`/update/${tutor.id}`} title="Edit">
+                          <FaRegPenToSquare size={18} />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="p-4 text-gray-500">
+                    No tutorials found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

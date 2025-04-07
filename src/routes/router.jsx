@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../Pages/MainLayout/MainLayout";
 import Home from "../Pages/Home/Home";
-import FindTutors from "../Pages/FindTutors/FindTutors";
+
 import TutorDetails from "../components/TutorDetails/TutorDetails";
 import MyBookTutors from "../Pages/MyBookTutors/MyBookTutors";
 import MyTutorials from "../Pages/MyTutorials/MyTutorials";
@@ -20,10 +20,7 @@ const router = createBrowserRouter([
         path: "/",
         element: <Home />,
       },
-      {
-        path: "/find-tutors",
-        element: <FindTutors />,
-      },
+      
       {
         path: "/find-tutors/:category",
         element: <TutorsByCategory />,
